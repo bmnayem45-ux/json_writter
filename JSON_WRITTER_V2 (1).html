@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Student Marks CRUD</title>
+
+</head>
+
+
+<body>
+
+    <h1>Student Marks</h1>
+    <label>Student Name:</label>
+    <input type="text" id="studentName">
+    <br><br>
+    <label>Obtained Marks:</label>
+    <input type="number" id="obtainedMarks">
+
+    <br><br>
+
+    <button onclick="addStudent()">
+        Add Student
+    </button>
+
+    <button id="updateButton" onclick="updateStudent()" style="display:none;">
+        Update Student
+    </button>
+
+    <hr>
+
+    <h2>Student List</h2>
+
+    <div id="studentList"></div>
+
+    <br>
+
+    <button onclick="downloadJSON()">
+        Download JSON
+    </button>
+
+    <script>
+
+
+        let students = [];
+        let editIndex = -1;
+
+
+        function addStudent() {
+
+            let name = document.getElementById("studentName").value;
+            let marks = document.getElementById("obtainedMarks").value;
+
+            if (name == "" || marks == "") {
+                alert("Please enter student name and marks.");
+                return;
+            }
+
+            let student = {
+                name: name,
+                marks: marks
+            };
+
+            students.push(student);
+
+            showStudents();
+            clearInputs();
+        }
+
+        function showStudents() {
+            let list = document.getElementById("studentList");
+            list.innerHTML = "";
+
+            for (let i = 0; i < students.length; i++) {
+
+                let student = students[i];
+
+                list.innerHTML +=
+
+                    "<p>" +
+
+                    "Name: " + student.name +
+
+                    " | Marks: " + student.marks +
+
+                    " " +
+
+                    "<button onclick='editStudent(" + i + ")'>Edit</button>" +
+
+                    " " +
+
+                    "<button onclick='deleteStudent(" + i + ")'>Delete</button>" +
+
+                    "</p>";
+
+            }
+
+        }
+
+
+        function deleteStudent(index) {
+
+            let answer = confirm("Do you want to delete this student?");
+
+            if (answer == false) {
+
+                return;
+
+            }
+
+            students.splice(index, 1);
+            showStudents();
+
+        }
+
+
+        function editStudent(index) {
+
+            editIndex = index;
+
+            let student = students[index];
+
+            document.getElementById("studentName").value = student.name;
+
+            document.getElementById("obtainedMarks").value = student.marks;
+
+            document.getElementById("updateButton").style.display = "inline";
+
+            document.querySelector(
+                "button[onclick='addStudent()']"
+            ).style.display = "none";
+
+        }
+
+
+        function updateStudent() {
+
+            let name = document.getElementById("studentName").value;
+            let marks = document.getElementById("obtainedMarks").value;
+
+            if (name == "" || marks == "") {
+                alert("Please enter student name and marks.");
+                return;
+            }
+
+            students[editIndex].name = name;
+
+            students[editIndex].marks = marks;
+
+            showStudents();
+
+            clearInputs();
+
+            editIndex = -1;
+
+            document.querySelector(
+                "button[onclick='addStudent()']"
+            ).style.display = "inline";
+
+            document.getElementById("updateButton").style.display = "none";
+        }
+
+        function clearInputs() {
+
+            document.getElementById("studentName").value = "";
+            document.getElementById("obtainedMarks").value = "";
+        }
+
+        function downloadJSON() {
+
+            let jsonData = JSON.stringify(students, null, 2);
+
+            let file = new Blob(
+
+                [jsonData],
+
+                {
+                    type: "application/json"
+                }
+
+            );
+
+            let url = URL.createObjectURL(file);
+            let link = document.createElement("a");
+            link.href = url;
+            link.download = "students.json";
+            link.click();
+
+            URL.revokeObjectURL(url);
+
+        }
+
+
+    </script>
+
+
+</body>
+
+</html>
